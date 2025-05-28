@@ -7,8 +7,8 @@
 %global maven_home %{_usr}/share/xmvn
 
 Name:           javapackages-tools
-Version:        6.2.0
-Release:        3
+Version:        6.4.0
+Release:        1
 Summary:        Macros and scripts for Java packaging support
 License:        BSD-3-Clause
 URL:            https://github.com/fedora-java/javapackages
