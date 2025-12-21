@@ -25,6 +25,10 @@ Source21:       toolchains-openjdk21.xml
 Patch0:         0001-coverage-use-usercustomize.patch
 Patch1:		javapackages-no-dupes.patch
 
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	libtool-base
+BuildRequires:	slibtool
 BuildRequires:  coreutils
 BuildRequires:  which
 BuildRequires:  make
