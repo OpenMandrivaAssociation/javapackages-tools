@@ -32,7 +32,7 @@ BuildRequires:	slibtool
 BuildRequires:  coreutils
 BuildRequires:  which
 BuildRequires:  make
-BuildRequires:  asciidoc
+BuildRequires:  asciidoctor
 BuildRequires:  xmlto
 BuildRequires:  python-devel
 BuildRequires:  python-lxml
