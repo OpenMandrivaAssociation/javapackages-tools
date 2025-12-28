@@ -1,0 +1,10 @@
+--- a/install
++++ b/install
+@@ -76,7 +76,6 @@
+ dir "${javaconfdir}"
+ dir "${javaconfdir}/security"
+ dir "${javaconfdir}/security/security.d"
+-dir "${jvmdir}"
+ dir "${jvmprivdir}"
+ dir "${jvmlibdir}"
+ dir "${jvmdatadir}"

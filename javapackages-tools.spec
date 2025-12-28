@@ -1,39 +1,28 @@
-%bcond_without xmvn_generator
-%bcond_without ivy
+%bcond ivy 0
 
-%global default_jdk %{_prefix}/lib/jvm/java-21-openjdk
-%global default_jre %{_prefix}/lib/jvm/jre-21-openjdk
+%global python_prefix python3
+%global python_interpreter %{?__python3}%{!?__python3:dummy}
 
 %global maven_home %{_usr}/share/xmvn
 
+%global _jpbindingdir %{_datadir}/jpbinding
+
 Name:           javapackages-tools
-Version:        6.4.0
-Release:        2
+Version:        6.4.1
+Release:        1
 Summary:        Macros and scripts for Java packaging support
 License:        BSD-3-Clause
 URL:            https://github.com/fedora-java/javapackages
 BuildArch:      noarch
 
-Source0:        https://github.com/fedora-java/javapackages/archive/%{version}.tar.gz
-Source3:        javapackages-config.json
+Source0:         https://github.com/fedora-java/javapackages/archive/%{version}.tar.gz
 
-Source8:        toolchains-openjdk8.xml
-Source11:       toolchains-openjdk11.xml
-Source17:       toolchains-openjdk17.xml
-Source21:       toolchains-openjdk21.xml
+Patch1:          0001-Disable-dependency-generators.patch
+Patch1000:       remove_duplicate_jvm_dir.patch
 
-Patch0:         0001-coverage-use-usercustomize.patch
-Patch1:		javapackages-no-dupes.patch
-
-BuildRequires:	autoconf
-BuildRequires:	automake
-BuildRequires:	libtool-base
-BuildRequires:	slibtool
-BuildRequires:  coreutils
-BuildRequires:  which
-BuildRequires:  make
 BuildRequires:  asciidoctor
-BuildRequires:  xmlto
+BuildRequires:  coreutils
+BuildRequires:  make
 BuildRequires:  python-devel
 BuildRequires:  python-lxml
 BuildRequires:  python-setuptools
@@ -42,9 +31,6 @@ BuildRequires:  python-pytest
 Requires:       javapackages-filesystem = %{version}-%{release}
 Requires:       coreutils
 Requires:       findutils
-Requires:       which
-# default JRE
-Requires:       jdk-current
 
 Provides:       jpackage-utils = %{version}-%{release}
 
@@ -59,11 +45,14 @@ Provides:       eclipse-filesystem = %{version}-%{release}
 This package provides some basic directories into which Java packages
 install their content.
 
-%package -n maven-local
+%package -n maven-local-openjdk21
 Summary:        Macros and scripts for Maven packaging support
+Requires:       java-21-openjdk-devel
+Provides:       maven-local = %{version}-%{release}
 Requires:       %{name} = %{version}-%{release}
-Requires:       javapackages-local = %{version}-%{release}
+Requires:       javapackages-local-openjdk21 = %{version}-%{release}
 Requires:       xmvn-minimal
+Requires:       xmvn-toolchain-openjdk21
 Requires:       mvn(org.fedoraproject.xmvn:xmvn-mojo)
 # Common Maven plugins required by almost every build. It wouldn't make
 # sense to explicitly require them in every package built with Maven.
@@ -71,8 +60,36 @@ Requires:       mvn(org.apache.maven.plugins:maven-compiler-plugin)
 Requires:       mvn(org.apache.maven.plugins:maven-jar-plugin)
 Requires:       mvn(org.apache.maven.plugins:maven-resources-plugin)
 Requires:       mvn(org.apache.maven.plugins:maven-surefire-plugin)
+# Remove in Fedora 45
+Obsoletes:      maven-local < 6.3.0
+Obsoletes:      maven-local-openjdk8 < 6.2.0-29
+Obsoletes:      maven-local-openjdk11 < 6.2.0-29
+Obsoletes:      maven-local-openjdk17 < 6.2.0-29
 
-%description -n maven-local
+%description -n maven-local-openjdk21
+This package provides macros and scripts to support packaging Maven artifacts.
+
+%package -n maven-local-openjdk25
+Summary:        Macros and scripts for Maven packaging support
+Requires:       java-25-openjdk-devel
+Requires:       %{name} = %{version}-%{release}
+Requires:       javapackages-local-openjdk25 = %{version}-%{release}
+Requires:       xmvn-minimal
+Requires:       xmvn-toolchain-openjdk25
+Requires:       mvn(org.fedoraproject.xmvn:xmvn-mojo)
+# Common Maven plugins required by almost every build. It wouldn't make
+# sense to explicitly require them in every package built with Maven.
+Requires:       mvn(org.apache.maven.plugins:maven-compiler-plugin)
+Requires:       mvn(org.apache.maven.plugins:maven-jar-plugin)
+Requires:       mvn(org.apache.maven.plugins:maven-resources-plugin)
+Requires:       mvn(org.apache.maven.plugins:maven-surefire-plugin)
+# Remove in Fedora 45
+Obsoletes:      maven-local < 6.3.0
+Obsoletes:      maven-local-openjdk8 < 6.2.0-29
+Obsoletes:      maven-local-openjdk11 < 6.2.0-29
+Obsoletes:      maven-local-openjdk17 < 6.2.0-29
+
+%description -n maven-local-openjdk25
 This package provides macros and scripts to support packaging Maven artifacts.
 
 %if %{with ivy}
@@ -88,39 +105,48 @@ This package implements local mode for Apache Ivy, which allows
 artifact resolution using XMvn resolver.
 %endif
 
-%package -n python-javapackages
+%package -n %{python_prefix}-javapackages
 Summary:        Module for handling various files for Java packaging
-Requires:       python-lxml
+Requires:       %{python_prefix}-lxml
 
-%description -n python-javapackages
+%description -n %{python_prefix}-javapackages
 Module for handling, querying and manipulating of various files for Java
 packaging in Linux distributions
 
-%package -n javapackages-local
+%package -n javapackages-local-openjdk21
 Summary:        Non-essential macros and scripts for Java packaging support
+Obsoletes:      javapackages-local < 6.3.0
+Provides:       javapackages-local = %{version}-%{release}
 Requires:       javapackages-common = %{version}-%{release}
-# Java build systems don't have hard requirement on java-devel, so it should be there
-Requires:       jdk-current
 Requires:       xmvn-tools
-%if %{with xmvn_generator}
+# Java build systems don't have hard requirement on java-devel, so it should be there
+Requires:       java-21-openjdk-devel
 Requires:       xmvn-generator
-%endif
+Requires:       (ant-openjdk21 if ant)
+Obsoletes:      javapackages-generators < 6.3.0
 
-%description -n javapackages-local
+%description -n javapackages-local-openjdk21
 This package provides non-essential macros and scripts to support Java packaging.
 
-%package -n javapackages-generators
-Summary:        RPM dependency generators for Java packaging support
-Requires:       %{name} = %{version}-%{release}
-Requires:       python-javapackages = %{version}-%{release}
-Requires:       python
+%package -n javapackages-local-openjdk25
+Summary:        Non-essential macros and scripts for Java packaging support
+Obsoletes:      javapackages-local < 6.3.0
+Requires:       javapackages-common = %{version}-%{release}
+Requires:       xmvn-tools
+# Java build systems don't have hard requirement on java-devel, so it should be there
+Requires:       java-25-openjdk-devel
+Requires:       xmvn-generator
+Requires:       (ant-openjdk25 if ant)
+Obsoletes:      javapackages-generators < 6.3.0
 
-%description -n javapackages-generators
-RPM dependency generators to support Java packaging.
+%description -n javapackages-local-openjdk25
+This package provides non-essential macros and scripts to support Java packaging.
 
 %package -n javapackages-common
 Summary:        Non-essential macros and scripts for Java packaging support
-Requires:       javapackages-generators = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
+Requires:       %{python_prefix}-javapackages = %{version}-%{release}
+Requires:       %{python_interpreter}
 
 %description -n javapackages-common
 This package provides non-essential, but commonly used macros and
@@ -134,49 +160,15 @@ Requires:       javapackages-local = %{version}-%{release}
 This package provides previously deprecated macros and scripts to
 support Java packaging as well as some additions to them.
 
-%package -n maven-local-openjdk8
-Summary:        OpenJDK 8 toolchain for XMvn
-RemovePathPostfixes: -openjdk8
-Requires:       maven-local
-Requires:       java-1.8.0-openjdk-devel
-
-%description -n maven-local-openjdk8
-OpenJDK 8 toolchain for XMvn
-
-%package -n maven-local-openjdk11
-Summary:        OpenJDK 11 toolchain for XMvn
-RemovePathPostfixes: -openjdk11
-Requires:       maven-local
-Requires:       java-11-openjdk-devel
-
-%description -n maven-local-openjdk11
-OpenJDK 11 toolchain for XMvn
-
-%package -n maven-local-openjdk17
-Summary:        OpenJDK 17 toolchain for XMvn
-RemovePathPostfixes: -openjdk17
-Requires:       maven-local
-Requires:       java-17-openjdk-devel
-
-%description -n maven-local-openjdk17
-OpenJDK 17 toolchain for XMvn
-
-%package -n maven-local-openjdk21
-Summary:        OpenJDK 21 toolchain for XMvn
-RemovePathPostfixes: -openjdk21
-Requires:       maven-local
-Requires:       java-21-openjdk-devel
-
-%description -n maven-local-openjdk21
-OpenJDK 21 toolchain for XMvn
-
 %prep
-%autosetup -p1 -n javapackages-%{version}
+%autosetup -p1 -C
 
 %build
-%configure --pyinterpreter=%{_bindir}/python \
-    --default_jdk=%{default_jdk} --default_jre=%{default_jre} \
-    --rpmmacrodir=%{_rpmmacrodir}
+%configure --pyinterpreter=%{python_interpreter} \
+    --rpmmacrodir=%{_rpmmacrodir} --rpmconfigdir=%{_rpmconfigdir} \
+    --m2home=%{maven_home} \
+    --jvm=openjdk21=%{_jvmdir}/jre-21-openjdk \
+    --jvm=openjdk25=%{_jvmdir}/jre-25-openjdk
 ./build
 
 %install
@@ -192,65 +184,79 @@ rm -rf %{buildroot}%{_sysconfdir}/ivy
 rm -rf %{buildroot}%{_sysconfdir}/ant.d
 %endif
 
-mkdir -p %{buildroot}%{maven_home}/conf/
-cp -p %{SOURCE8} %{buildroot}%{maven_home}/conf/toolchains.xml-openjdk8
-cp -p %{SOURCE11} %{buildroot}%{maven_home}/conf/toolchains.xml-openjdk11
-cp -p %{SOURCE17} %{buildroot}%{maven_home}/conf/toolchains.xml-openjdk17
-cp -p %{SOURCE21} %{buildroot}%{maven_home}/conf/toolchains.xml-openjdk21
-
-install -p -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/java/javapackages-config.json
-
-# Don't own standard directories
-sed -i -e '/fileattrs$/d' files-generators
-
 %if 0%{?flatpak}
 # make both /app (runtime deps) and /usr (build-only deps) builds discoverable
 sed -e '/^JAVA_LIBDIR=/s|$|:/usr/share/java|' \
     -e '/^JNI_LIBDIR=/s|$|:/usr/lib/java|' \
     -i %{buildroot}%{_sysconfdir}/java/java.conf
-# /usr path is hard-coded in xmvn
+%if %{with ivy}
+# fix ivy paths
+mkdir -p %{buildroot}/etc
+mv %{buildroot}%{_sysconfdir}/{ant.d,ivy} %{buildroot}/etc/
+sed -i -e 's|%{_sysconfdir}|/etc|' files-ivy
+%endif
+# /usr path is hard-coded in ant and xmvn
+mkdir -p %{buildroot}%{_usr}/{bin,share}
+ln -s %{_bindir}/build-classpath %{buildroot}%{_usr}/bin/build-classpath
 ln -s %{_datadir}/java-utils %{buildroot}%{_usr}/share/java-utils
 %endif
 
 %check
 ./check
 
+%transfiletriggerin -- %{_jpbindingdir}
+shopt -s nullglob
+grep -E '^%{_jpbindingdir}/.*\.d/' | sed 's|%{_jpbindingdir}/\(.*\)/\(.*\)|\1 \2|' | while read dir tgt; do
+  lnk=${dir/%.d}
+  ln -sf "$dir/$tgt" %{_jpbindingdir}/"$lnk"
+done
+
+%transfiletriggerun -- %{_jpbindingdir}
+shopt -s nullglob
+grep -E '^%{_jpbindingdir}/.*\.d/' | sed 's|%{_jpbindingdir}/\(.*\)/\(.*\)|\1 \2|' | while read dir tgt; do
+  lnk=${dir/%.d}
+  was=$(readlink %{_jpbindingdir}/"$lnk" || :)
+  if [[ "$was" = "$dir/$tgt" ]]; then
+    unlink %{_jpbindingdir}/"$lnk"
+  fi
+done
+
+%transfiletriggerpostun -- %{_jpbindingdir}
+shopt -s nullglob
+for bindd in %{_jpbindingdir}/*.d/; do
+  lnk=${bindd/%.d\/}
+  if ! [[ -e "$lnk" ]]; then
+    for ftgt in "$bindd"*; do
+      tgt=$(realpath -m -s --relative-to=%{_jpbindingdir} "$ftgt")
+      ln -sf "$tgt" "$lnk"
+      break
+    done
+  fi
+done
+
 %files -f files-tools
 %if 0%{?flatpak}
+%{_usr}/bin/build-classpath
 %{_usr}/share/java-utils
 %endif
 
 %files -n javapackages-filesystem -f files-filesystem
 
-%files -n javapackages-generators -f files-generators
-
 %files -n javapackages-common -f files-common
 
 %files -n javapackages-compat -f files-compat
 
-%files -n javapackages-local
+%files -n javapackages-local-openjdk21 -f files-local-openjdk21
 
-%files -n maven-local
+%files -n maven-local-openjdk21
+
+%files -n javapackages-local-openjdk25 -f files-local-openjdk25
+
+%files -n maven-local-openjdk25
 
 %if %{with ivy}
 %files -n ivy-local -f files-ivy
 %endif
 
-%files -n maven-local-openjdk8
-%dir %{maven_home}/conf
-%{maven_home}/conf/toolchains.xml-openjdk8
-
-%files -n maven-local-openjdk11
-%dir %{maven_home}/conf
-%{maven_home}/conf/toolchains.xml-openjdk11
-
-%files -n maven-local-openjdk17
-%dir %{maven_home}/conf
-%{maven_home}/conf/toolchains.xml-openjdk17
-
-%files -n maven-local-openjdk21
-%dir %{maven_home}/conf
-%{maven_home}/conf/toolchains.xml-openjdk21
-
-%files -n python-javapackages -f files-python
+%files -n %{python_prefix}-javapackages -f files-python
 %license LICENSE
