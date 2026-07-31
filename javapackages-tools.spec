@@ -8,7 +8,7 @@
 %global _jpbindingdir %{_datadir}/jpbinding
 
 Name:           javapackages-tools
-Version:        6.4.1
+Version:        6.5.1
 Release:        1
 Summary:        Macros and scripts for Java packaging support
 License:        BSD-3-Clause
@@ -17,7 +17,7 @@ BuildArch:      noarch
 
 Source0:         https://github.com/fedora-java/javapackages/archive/%{version}.tar.gz
 
-Patch1:          0001-Disable-dependency-generators.patch
+# dropped (no longer applies): Patch1:          0001-Disable-dependency-generators.patch
 Patch1000:       remove_duplicate_jvm_dir.patch
 
 BuildRequires:  asciidoctor
@@ -161,7 +161,7 @@ This package provides previously deprecated macros and scripts to
 support Java packaging as well as some additions to them.
 
 %prep
-%autosetup -p1 -C
+%autosetup -p1 -C -n javapackages-6.5.1
 
 %build
 %configure --pyinterpreter=%{python_interpreter} \
