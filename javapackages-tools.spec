@@ -55,15 +55,7 @@ Requires:       java-21-openjdk-devel
 Provides:       maven-local = %{version}-%{release}
 Requires:       %{name} = %{version}-%{release}
 Requires:       javapackages-local-openjdk21 = %{version}-%{release}
-Requires:       xmvn-minimal
-Requires:       xmvn-toolchain-openjdk21
-Requires:       mvn(org.fedoraproject.xmvn:xmvn-mojo)
-# Common Maven plugins required by almost every build. It wouldn't make
-# sense to explicitly require them in every package built with Maven.
-Requires:       mvn(org.apache.maven.plugins:maven-compiler-plugin)
-Requires:       mvn(org.apache.maven.plugins:maven-jar-plugin)
-Requires:       mvn(org.apache.maven.plugins:maven-resources-plugin)
-Requires:       mvn(org.apache.maven.plugins:maven-surefire-plugin)
+# Cooker has no xmvn package and nothing provides mvn().
 # Remove in Fedora 45
 Obsoletes:      maven-local < 6.3.0
 Obsoletes:      maven-local-openjdk8 < 6.2.0-29
@@ -79,15 +71,6 @@ Group:          Development/Java
 Requires:       java-25-openjdk-devel
 Requires:       %{name} = %{version}-%{release}
 Requires:       javapackages-local-openjdk25 = %{version}-%{release}
-Requires:       xmvn-minimal
-Requires:       xmvn-toolchain-openjdk25
-Requires:       mvn(org.fedoraproject.xmvn:xmvn-mojo)
-# Common Maven plugins required by almost every build. It wouldn't make
-# sense to explicitly require them in every package built with Maven.
-Requires:       mvn(org.apache.maven.plugins:maven-compiler-plugin)
-Requires:       mvn(org.apache.maven.plugins:maven-jar-plugin)
-Requires:       mvn(org.apache.maven.plugins:maven-resources-plugin)
-Requires:       mvn(org.apache.maven.plugins:maven-surefire-plugin)
 # Remove in Fedora 45
 Obsoletes:      maven-local < 6.3.0
 Obsoletes:      maven-local-openjdk8 < 6.2.0-29
@@ -126,10 +109,8 @@ Group:          Development/Java
 Obsoletes:      javapackages-local < 6.3.0
 Provides:       javapackages-local = %{version}-%{release}
 Requires:       javapackages-common = %{version}-%{release}
-Requires:       xmvn-tools
 # Java build systems don't have hard requirement on java-devel, so it should be there
 Requires:       java-21-openjdk-devel
-Requires:       xmvn-generator
 Requires:       (ant-openjdk21 if ant)
 Obsoletes:      javapackages-generators < 6.3.0
 
@@ -141,10 +122,8 @@ Summary:        Non-essential macros and scripts for Java packaging support
 Group:          Development/Java
 Obsoletes:      javapackages-local < 6.3.0
 Requires:       javapackages-common = %{version}-%{release}
-Requires:       xmvn-tools
 # Java build systems don't have hard requirement on java-devel, so it should be there
 Requires:       java-25-openjdk-devel
-Requires:       xmvn-generator
 Requires:       (ant-openjdk25 if ant)
 Obsoletes:      javapackages-generators < 6.3.0
 
