@@ -20,6 +20,7 @@ Source0:         https://github.com/fedora-java/javapackages/archive/%{version}.
 
 # dropped (no longer applies): Patch1:          0001-Disable-dependency-generators.patch
 Patch1000:       remove_duplicate_jvm_dir.patch
+Patch1001:       javapackages-python315-gzip.patch
 
 BuildRequires:  asciidoctor
 BuildRequires:  coreutils

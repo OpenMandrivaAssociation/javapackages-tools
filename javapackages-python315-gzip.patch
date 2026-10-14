@@ -1,0 +1,24 @@
+Python 3.15's gzip writer uses a different XFL flag, so the exact base64
+of the mvn_build builddep blob is not stable. Compare the decompressed
+bytes with the file that was compressed.
+diff -up javapackages-6.5.1/test/mvn_build_test.py javapackages-gzip/test/mvn_build_test.py
+--- javapackages-6.5.1/test/mvn_build_test.py
++++ javapackages-gzip/test/mvn_build_test.py
+@@ -149,10 +149,13 @@ class TestMvnBuild(unittest.TestCase):
+         self.assertEqual(return_value, 0, stderr)
+         lines = stdout.splitlines()
+         self.assertEqual(lines[0], '-----BEGIN MAVEN BUILD DEPENDENCIES-----')
+-        self.assertEqual(lines[1], 'H4sIAAAAAAAC/yXMwQ0DIQwEwD9VbAEnKkkHUR4+bJ0sYSDY7j9IKWDmNbcYdHkaePa54Rogk7jQ')
+-        self.assertEqual(lines[2], '5nBpIZEbxLrUm44H0jWu4sIHQDTdJiPE1sE6mrJyjkAGOt2nh8S/Fhg9g0Bdv0m1vGutn/IDOadj')
+-        self.assertEqual(lines[3], 'dIIAAAA=')
+-        self.assertEqual(lines[4], '-----END MAVEN BUILD DEPENDENCIES-----')
++        self.assertTrue(lines[-1].startswith('-----END MAVEN BUILD DEPENDENCIES-----'))
++        import base64
++        import gzip
++        payload = ''.join(lines[1:-1])
++        with open('.xmvn-builddep', 'rb') as dep:
++            expected = dep.read()
++        self.assertEqual(gzip.decompress(base64.b64decode(payload)), expected)
+ 
+ if __name__ == '__main__':
+     unittest.main()
