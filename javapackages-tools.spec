@@ -1,7 +1,7 @@
 %bcond ivy 0
 
 %global python_prefix python3
-%global python_interpreter %{?__python3}%{!?__python3:dummy}
+%global python_interpreter python
 
 %global maven_home %{_usr}/share/xmvn
 
@@ -11,6 +11,7 @@ Name:           javapackages-tools
 Version:        6.5.1
 Release:        1
 Summary:        Macros and scripts for Java packaging support
+Group:          Development/Java
 License:        BSD-3-Clause
 URL:            https://github.com/fedora-java/javapackages
 BuildArch:      noarch
@@ -23,10 +24,10 @@ Patch1000:       remove_duplicate_jvm_dir.patch
 BuildRequires:  asciidoctor
 BuildRequires:  coreutils
 BuildRequires:  make
-BuildRequires:  python-devel
-BuildRequires:  python-lxml
-BuildRequires:  python-setuptools
-BuildRequires:  python-pytest
+BuildRequires:  pkgconfig(python3)
+BuildRequires:  python%{pyver}dist(lxml)
+BuildRequires:  python%{pyver}dist(setuptools)
+BuildRequires:  python%{pyver}dist(pytest)
 
 Requires:       javapackages-filesystem = %{version}-%{release}
 Requires:       coreutils
@@ -39,6 +40,7 @@ This package provides macros and scripts to support Java packaging.
 
 %package -n javapackages-filesystem
 Summary:        Java packages filesystem layout
+Group:          Development/Java
 Provides:       eclipse-filesystem = %{version}-%{release}
 
 %description -n javapackages-filesystem
@@ -47,6 +49,7 @@ install their content.
 
 %package -n maven-local-openjdk21
 Summary:        Macros and scripts for Maven packaging support
+Group:          Development/Java
 Requires:       java-21-openjdk-devel
 Provides:       maven-local = %{version}-%{release}
 Requires:       %{name} = %{version}-%{release}
@@ -71,6 +74,7 @@ This package provides macros and scripts to support packaging Maven artifacts.
 
 %package -n maven-local-openjdk25
 Summary:        Macros and scripts for Maven packaging support
+Group:          Development/Java
 Requires:       java-25-openjdk-devel
 Requires:       %{name} = %{version}-%{release}
 Requires:       javapackages-local-openjdk25 = %{version}-%{release}
@@ -95,6 +99,7 @@ This package provides macros and scripts to support packaging Maven artifacts.
 %if %{with ivy}
 %package -n ivy-local
 Summary:        Local mode for Apache Ivy
+Group:          Development/Java
 Requires:       %{name} = %{version}-%{release}
 Requires:       javapackages-local = %{version}-%{release}
 Requires:       apache-ivy >= 2.3.0-8
@@ -107,7 +112,8 @@ artifact resolution using XMvn resolver.
 
 %package -n %{python_prefix}-javapackages
 Summary:        Module for handling various files for Java packaging
-Requires:       %{python_prefix}-lxml
+Group:          Development/Java
+Requires:       python%{pyver}dist(lxml)
 
 %description -n %{python_prefix}-javapackages
 Module for handling, querying and manipulating of various files for Java
@@ -115,6 +121,7 @@ packaging in Linux distributions
 
 %package -n javapackages-local-openjdk21
 Summary:        Non-essential macros and scripts for Java packaging support
+Group:          Development/Java
 Obsoletes:      javapackages-local < 6.3.0
 Provides:       javapackages-local = %{version}-%{release}
 Requires:       javapackages-common = %{version}-%{release}
@@ -130,6 +137,7 @@ This package provides non-essential macros and scripts to support Java packaging
 
 %package -n javapackages-local-openjdk25
 Summary:        Non-essential macros and scripts for Java packaging support
+Group:          Development/Java
 Obsoletes:      javapackages-local < 6.3.0
 Requires:       javapackages-common = %{version}-%{release}
 Requires:       xmvn-tools
@@ -144,6 +152,7 @@ This package provides non-essential macros and scripts to support Java packaging
 
 %package -n javapackages-common
 Summary:        Non-essential macros and scripts for Java packaging support
+Group:          Development/Java
 Requires:       %{name} = %{version}-%{release}
 Requires:       %{python_prefix}-javapackages = %{version}-%{release}
 Requires:       %{python_interpreter}
@@ -154,6 +163,7 @@ scripts to support Java packaging.
 
 %package -n javapackages-compat
 Summary:        Previously deprecated macros and scripts for Java packaging support
+Group:          Development/Java
 Requires:       javapackages-local = %{version}-%{release}
 
 %description -n javapackages-compat
