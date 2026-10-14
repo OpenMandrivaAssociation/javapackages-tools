@@ -178,6 +178,7 @@ support Java packaging as well as some additions to them.
 %configure --pyinterpreter=%{python_interpreter} \
     --rpmmacrodir=%{_rpmmacrodir} --rpmconfigdir=%{_rpmconfigdir} \
     --m2home=%{maven_home} \
+    --without-generators \
     --jvm=openjdk21=%{_jvmdir}/jre-21-openjdk \
     --jvm=openjdk25=%{_jvmdir}/jre-25-openjdk
 ./build
