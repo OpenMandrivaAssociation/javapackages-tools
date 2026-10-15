@@ -9,7 +9,7 @@
 
 Name:           javapackages-tools
 Version:        6.5.1
-Release:        1
+Release:        2
 Summary:        Macros and scripts for Java packaging support
 Group:          Development/Java
 License:        BSD-3-Clause
@@ -98,6 +98,10 @@ artifact resolution using XMvn resolver.
 Summary:        Module for handling various files for Java packaging
 Group:          Development/Java
 Requires:       python%{pyver}dist(lxml)
+# 6.4.0 shipped this module as python-javapackages. That build is still
+# installed and requires Python 3.14, and 6.5.1-1 did not replace it.
+Obsoletes:      python-javapackages < %{EVRD}
+Provides:       python-javapackages = %{EVRD}
 
 %description -n %{python_prefix}-javapackages
 Module for handling, querying and manipulating of various files for Java
