@@ -9,7 +9,7 @@
 
 Name:           javapackages-tools
 Version:        6.5.1
-Release:        2
+Release:        3
 Summary:        Macros and scripts for Java packaging support
 Group:          Development/Java
 License:        BSD-3-Clause
@@ -110,7 +110,9 @@ packaging in Linux distributions
 %package -n javapackages-local-openjdk21
 Summary:        Non-essential macros and scripts for Java packaging support
 Group:          Development/Java
-Obsoletes:      javapackages-local < 6.3.0
+# 6.4.0 still shipped an unversioned javapackages-local. < 6.3.0
+# left that package installed, pinning javapackages-common.
+Obsoletes:      javapackages-local < %{EVRD}
 Provides:       javapackages-local = %{version}-%{release}
 Requires:       javapackages-common = %{version}-%{release}
 # Java build systems don't have hard requirement on java-devel, so it should be there
